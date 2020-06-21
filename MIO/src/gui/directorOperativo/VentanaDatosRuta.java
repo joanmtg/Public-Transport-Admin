@@ -1,0 +1,606 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package gui.directorOperativo;
+
+import accesoDatos.DaoRuta;
+import accesoDatos.DaoRutaEstacion;
+import controlador.ControladorRuta;
+import controlador.ControladorRutaEstacion;
+import gui.gerente.VentanaVisualizacionRutas;
+import java.util.ArrayList;
+import java.util.Calendar;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import logica.Estacion;
+import logica.Ruta;
+import validaciones.Validaciones;
+
+/**
+ *
+ * @author Joan
+ */
+public class VentanaDatosRuta extends javax.swing.JFrame {
+
+    JFrame ventanaAnterior;
+    String operacion;
+    ArrayList<Estacion> estaciones = new ArrayList<>();
+    Ruta rutaModificar;
+    ControladorRuta controladorRuta= new ControladorRuta();
+    ControladorRutaEstacion controladorRutaEstacion = new ControladorRutaEstacion();
+    Validaciones validaciones = new Validaciones();
+            
+    public VentanaDatosRuta(JFrame anterior, String operacion, Ruta ruta) {
+        
+        super("Registro/Modificacion de Ruta");
+        initComponents();
+        
+        ventanaAnterior = anterior;
+        this.operacion = operacion;
+        rutaModificar = ruta;
+                
+        setLocationRelativeTo(null);
+                     
+        Calendar fecha = Calendar.getInstance();
+        
+        int dia, mes, año;
+        dia = fecha.get(Calendar.DATE);
+        mes = fecha.get(Calendar.MONTH) + 1;
+        año = fecha.get(Calendar.YEAR);
+        
+        labelFecha.setText(dia + "/" + mes + "/" + año);
+        
+        if(operacion.equals("Modificacion")){
+            llenarCamposModificar();
+        }        
+        
+    }    
+    
+    public void llenarCamposModificar(){
+        
+        tfCodRuta.setText(rutaModificar.getCodigo());
+        tfNombreRuta.setText(rutaModificar.getNombre());
+        taDescripcion.setText(rutaModificar.getDescripcion());
+                
+        //traer las estaciones de la ruta y llenar la tabla
+        estaciones = controladorRuta.estacionesRuta(rutaModificar.getCodigo());
+        
+        DefaultTableModel modelo = (DefaultTableModel) tablaEstaciones.getModel();
+        modelo.setRowCount(0);
+        
+        Object[] newRow = new Object[2];
+        
+        for (int i = 0; i < estaciones.size(); i++) {
+            
+            Estacion estacion = estaciones.get(i);
+            
+            newRow[0] = estacion.getCodigo();
+            newRow[1] = estacion.getNombre();
+            
+            modelo.addRow(newRow);
+        }        
+    }
+    
+    public void añadirEstaciones(ArrayList<Estacion> estacionesIngresadas){               
+                       
+        ArrayList<Integer> codigosEstaciones = new ArrayList<>();
+        
+        for (int i = 0; i < estaciones.size(); i++) {
+            codigosEstaciones.add(estaciones.get(i).getCodigo());            
+        }
+        
+        for (int i = 0; i < estacionesIngresadas.size(); i++) {
+            
+            Estacion estacion = estacionesIngresadas.get(i);
+            
+            if(!codigosEstaciones.contains(estacion.getCodigo())){
+                                
+                estaciones.add(estacion);
+            }           
+        }   
+        
+        actualizarTablaEstaciones();
+    }
+    
+    public void actualizarTablaEstaciones(){
+        
+        DefaultTableModel modelo = (DefaultTableModel) tablaEstaciones.getModel();
+        modelo.setRowCount(0);
+        
+        for (int i = 0; i < estaciones.size(); i++) {
+            Estacion estacion = estaciones.get(i);   
+            
+            Object[] newRow = new Object[2];
+            
+            newRow[0] = estacion.getCodigo();
+            newRow[1] = estacion.getNombre();
+            
+            modelo.addRow(newRow);            
+        }        
+    }
+    
+    public void eliminarEstacion(int codEstacion){
+        
+        for (int i = 0; i < estaciones.size(); i++) {
+            Estacion estacion = estaciones.get(i);
+            
+            if(codEstacion == estacion.getCodigo()){
+                estaciones.remove(i);
+                break;
+            }            
+        }
+        
+        actualizarTablaEstaciones();
+        
+    }
+    
+    public void reiniciarDatosYCampos(){
+        
+        tfCodRuta.setText("");
+        tfNombreRuta.setText("");
+        taDescripcion.setText("");
+        
+        DefaultTableModel modelo = (DefaultTableModel)tablaEstaciones.getModel();
+        modelo.setRowCount(0);
+        
+        estaciones.clear();      
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        panelPrincipal = new javax.swing.JPanel();
+        panelSuperior = new javax.swing.JPanel();
+        labelLogo = new javax.swing.JLabel();
+        labelEslogan = new javax.swing.JLabel();
+        labelFecha = new javax.swing.JLabel();
+        panelInfo = new javax.swing.JPanel();
+        bTerminar = new javax.swing.JButton();
+        bAtras = new javax.swing.JButton();
+        lCapacidad = new javax.swing.JLabel();
+        lCapacidad1 = new javax.swing.JLabel();
+        lCapacidad2 = new javax.swing.JLabel();
+        tfCodRuta = new javax.swing.JTextField();
+        tfNombreRuta = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        taDescripcion = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablaEstaciones = new javax.swing.JTable();
+        bAñadirEstaciones = new javax.swing.JButton();
+        bEliminarEstacion = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
+
+        panelPrincipal.setBackground(new java.awt.Color(0, 97, 147));
+
+        panelSuperior.setBackground(new java.awt.Color(0, 97, 147));
+        panelSuperior.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        labelLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/logoMio.png"))); // NOI18N
+
+        labelEslogan.setFont(new java.awt.Font("Arial", 3, 16)); // NOI18N
+        labelEslogan.setForeground(new java.awt.Color(255, 255, 255));
+        labelEslogan.setText("EL MIO ES TUYO");
+
+        labelFecha.setFont(new java.awt.Font("Arial", 3, 16)); // NOI18N
+        labelFecha.setForeground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout panelSuperiorLayout = new javax.swing.GroupLayout(panelSuperior);
+        panelSuperior.setLayout(panelSuperiorLayout);
+        panelSuperiorLayout.setHorizontalGroup(
+            panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelSuperiorLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addGroup(panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelEslogan, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27))
+        );
+        panelSuperiorLayout.setVerticalGroup(
+            panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelSuperiorLayout.createSequentialGroup()
+                .addGroup(panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelSuperiorLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(labelLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelSuperiorLayout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addComponent(labelEslogan)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(labelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        panelInfo.setBackground(new java.awt.Color(0, 97, 147));
+        panelInfo.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Datos de Ruta", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 3, 18), new java.awt.Color(255, 255, 255))); // NOI18N
+
+        bTerminar.setBackground(new java.awt.Color(0, 97, 147));
+        bTerminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/general/bTerminar.png"))); // NOI18N
+        bTerminar.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/general/bTerminarPR.png"))); // NOI18N
+        bTerminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bTerminarActionPerformed(evt);
+            }
+        });
+
+        bAtras.setBackground(new java.awt.Color(0, 97, 147));
+        bAtras.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/bAtras.png"))); // NOI18N
+        bAtras.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/bAtrasPR.png"))); // NOI18N
+        bAtras.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bAtrasActionPerformed(evt);
+            }
+        });
+
+        lCapacidad.setFont(new java.awt.Font("Arial", 3, 14)); // NOI18N
+        lCapacidad.setForeground(new java.awt.Color(255, 255, 255));
+        lCapacidad.setText("Código:");
+
+        lCapacidad1.setFont(new java.awt.Font("Arial", 3, 14)); // NOI18N
+        lCapacidad1.setForeground(new java.awt.Color(255, 255, 255));
+        lCapacidad1.setText("Nombre:");
+
+        lCapacidad2.setFont(new java.awt.Font("Arial", 3, 14)); // NOI18N
+        lCapacidad2.setForeground(new java.awt.Color(255, 255, 255));
+        lCapacidad2.setText("Descripción:");
+
+        tfCodRuta.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfCodRutaKeyTyped(evt);
+            }
+        });
+
+        tfNombreRuta.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfNombreRutaKeyTyped(evt);
+            }
+        });
+
+        taDescripcion.setColumns(20);
+        taDescripcion.setRows(5);
+        taDescripcion.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                taDescripcionKeyTyped(evt);
+            }
+        });
+        jScrollPane1.setViewportView(taDescripcion);
+
+        tablaEstaciones.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Codigo", "Estación"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(tablaEstaciones);
+
+        bAñadirEstaciones.setBackground(new java.awt.Color(0, 97, 147));
+        bAñadirEstaciones.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ventanaDirOperativo/bAnadirEstacion.png"))); // NOI18N
+        bAñadirEstaciones.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ventanaDirOperativo/bAnadirEstacionPR.png"))); // NOI18N
+        bAñadirEstaciones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bAñadirEstacionesActionPerformed(evt);
+            }
+        });
+
+        bEliminarEstacion.setBackground(new java.awt.Color(0, 97, 147));
+        bEliminarEstacion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ventanaDirOperativo/bEliminarEstacion.png"))); // NOI18N
+        bEliminarEstacion.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ventanaDirOperativo/bEliminarEstacionPR.png"))); // NOI18N
+        bEliminarEstacion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bEliminarEstacionActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panelInfoLayout = new javax.swing.GroupLayout(panelInfo);
+        panelInfo.setLayout(panelInfoLayout);
+        panelInfoLayout.setHorizontalGroup(
+            panelInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelInfoLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(panelInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelInfoLayout.createSequentialGroup()
+                        .addComponent(bAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
+                        .addComponent(bTerminar, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelInfoLayout.createSequentialGroup()
+                        .addComponent(lCapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfCodRuta, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(47, 47, 47)
+                        .addComponent(lCapacidad1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tfNombreRuta, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lCapacidad2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelInfoLayout.createSequentialGroup()
+                        .addGroup(panelInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE))
+                        .addGap(26, 26, 26)
+                        .addGroup(panelInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(bAñadirEstaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(bEliminarEstacion, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        panelInfoLayout.setVerticalGroup(
+            panelInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelInfoLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(panelInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lCapacidad)
+                    .addComponent(lCapacidad1)
+                    .addComponent(tfCodRuta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfNombreRuta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(lCapacidad2)
+                .addGap(16, 16, 16)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addGroup(panelInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(panelInfoLayout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelInfoLayout.createSequentialGroup()
+                        .addComponent(bAñadirEstaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(26, 26, 26)
+                        .addComponent(bEliminarEstacion, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addGroup(panelInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(bTerminar, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(19, 19, 19))
+        );
+
+        javax.swing.GroupLayout panelPrincipalLayout = new javax.swing.GroupLayout(panelPrincipal);
+        panelPrincipal.setLayout(panelPrincipalLayout);
+        panelPrincipalLayout.setHorizontalGroup(
+            panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelPrincipalLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(panelSuperior, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
+        );
+        panelPrincipalLayout.setVerticalGroup(
+            panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelPrincipalLayout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(panelSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(panelInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(20, 20, 20))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panelPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panelPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void bAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAtrasActionPerformed
+        
+        int cerrar = JOptionPane.showConfirmDialog(null,"Se cancelará la operación actual\n¿Está seguro de que quiere cerrar esta ventana?", "Confirmación de cierre", JOptionPane.YES_NO_OPTION);
+
+        if(cerrar == JOptionPane.YES_OPTION){
+            this.dispose();
+            ventanaAnterior.setVisible(true);
+            ventanaAnterior.setLocationRelativeTo(null);
+            
+            VentanaVisualizacionRutas vRutas = (VentanaVisualizacionRutas) ventanaAnterior;
+            vRutas.llenarTablaRutas();
+        }
+    }//GEN-LAST:event_bAtrasActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        
+        bAtras.doClick();
+        
+    }//GEN-LAST:event_formWindowClosing
+
+    private void bAñadirEstacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAñadirEstacionesActionPerformed
+        
+        VentanaVisualizarEstaciones vEstaciones = new VentanaVisualizarEstaciones(this, true);
+        this.setVisible(false);
+        vEstaciones.setVisible(true);
+        vEstaciones.setLocationRelativeTo(null);
+        
+    }//GEN-LAST:event_bAñadirEstacionesActionPerformed
+
+    private void bEliminarEstacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bEliminarEstacionActionPerformed
+        
+        int filaSeleccionada = tablaEstaciones.getSelectedRow();
+        
+        if(filaSeleccionada != -1){
+            
+            DefaultTableModel modelo = (DefaultTableModel) tablaEstaciones.getModel();                       
+            
+            int codEstacion = Integer.parseInt(modelo.getValueAt(filaSeleccionada, 0).toString());
+                        
+            eliminarEstacion(codEstacion);                  
+            
+        }else{
+            JOptionPane.showMessageDialog(null, "Debe seleccionar la estación a borrar", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+        
+    }//GEN-LAST:event_bEliminarEstacionActionPerformed
+
+    private void bTerminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bTerminarActionPerformed
+                        
+        String codRuta = tfCodRuta.getText();
+        String nombreRuta = tfNombreRuta.getText();
+        String descripcion = taDescripcion.getText();
+        
+        int numEstaciones = estaciones.size();
+        
+        
+        if(codRuta.equals("") || nombreRuta.equals("") || descripcion.equals("")){
+            JOptionPane.showMessageDialog(null, "Debe llenar toda la información", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+        
+        else if(numEstaciones == 0){
+            JOptionPane.showMessageDialog(null, "Debe asignar al menos una estación", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+        
+        else{
+            
+            boolean existeRuta = controladorRuta.existeRuta(codRuta);
+            
+            if(existeRuta && operacion.equals("Registro")){
+                JOptionPane.showMessageDialog(null, "La ruta con codigo " + codRuta + " ya está registrada", "Error", JOptionPane.WARNING_MESSAGE);
+            }
+            else{ //La ruta es válida (no está registrada en la BD)
+                
+                if(operacion.equals("Registro")){  
+                    
+                    Ruta newRuta = new Ruta(codRuta, nombreRuta, descripcion);
+                    
+                    int resultado = controladorRuta.registrarRuta(newRuta);
+                    
+                    controladorRutaEstacion.eliminarEstacionesRuta(codRuta);
+                    controladorRutaEstacion.agregarEstacionesRuta(codRuta, estaciones);
+                    
+                    if(resultado != 0){
+                        JOptionPane.showMessageDialog(null, "Ruta registrada correctamente");
+                        reiniciarDatosYCampos();
+                    }
+                    
+                }
+                else if (operacion.equals("Modificacion")){
+                    
+                    String codRutaOriginal = rutaModificar.getCodigo();
+                    rutaModificar = new Ruta(codRuta, nombreRuta, descripcion);
+                    
+                    int resultado = controladorRuta.modificarRuta(codRutaOriginal, rutaModificar);
+                    
+                    controladorRutaEstacion.eliminarEstacionesRuta(codRuta);
+                    controladorRutaEstacion.agregarEstacionesRuta(codRuta, estaciones);
+                    
+                    if(resultado != 0){
+                        JOptionPane.showMessageDialog(null, "Ruta modificada correctamente");
+                        
+                        this.dispose();
+                        ventanaAnterior.setVisible(true);
+                        ventanaAnterior.setLocationRelativeTo(null);
+            
+                        VentanaVisualizacionRutas vRutas = (VentanaVisualizacionRutas) ventanaAnterior;
+                        vRutas.llenarTablaRutas();
+                        
+                    }
+                } 
+                
+            }           
+        }
+        
+        
+    }//GEN-LAST:event_bTerminarActionPerformed
+
+    private void tfCodRutaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfCodRutaKeyTyped
+        // TODO add your handling code here:
+        validaciones.validarTamano(tfCodRuta, evt, 5);
+    }//GEN-LAST:event_tfCodRutaKeyTyped
+
+    private void tfNombreRutaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfNombreRutaKeyTyped
+        // TODO add your handling code here:
+        validaciones.validarTamano(tfNombreRuta, evt, 50);
+    }//GEN-LAST:event_tfNombreRutaKeyTyped
+
+    private void taDescripcionKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_taDescripcionKeyTyped
+        // TODO add your handling code here:
+        validaciones.validarTamanoArea(taDescripcion, evt, 100);
+    }//GEN-LAST:event_taDescripcionKeyTyped
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(VentanaDatosRuta.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(VentanaDatosRuta.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(VentanaDatosRuta.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(VentanaDatosRuta.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new VentanaDatosRuta(null, null, null).setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bAtras;
+    private javax.swing.JButton bAñadirEstaciones;
+    private javax.swing.JButton bEliminarEstacion;
+    private javax.swing.JButton bTerminar;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lCapacidad;
+    private javax.swing.JLabel lCapacidad1;
+    private javax.swing.JLabel lCapacidad2;
+    private javax.swing.JLabel labelEslogan;
+    private javax.swing.JLabel labelFecha;
+    private javax.swing.JLabel labelLogo;
+    private javax.swing.JPanel panelInfo;
+    private javax.swing.JPanel panelPrincipal;
+    private javax.swing.JPanel panelSuperior;
+    private javax.swing.JTextArea taDescripcion;
+    private javax.swing.JTable tablaEstaciones;
+    private javax.swing.JTextField tfCodRuta;
+    private javax.swing.JTextField tfNombreRuta;
+    // End of variables declaration//GEN-END:variables
+}
